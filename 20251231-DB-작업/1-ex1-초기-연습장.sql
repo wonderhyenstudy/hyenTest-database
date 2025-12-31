@@ -6,3 +6,5 @@ select * from emp;
 
 --현재 시간 조회 
 select sysdate from dual;
+
+select * from emp; 
