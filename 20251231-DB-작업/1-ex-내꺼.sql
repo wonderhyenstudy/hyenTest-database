@@ -1,5 +1,5 @@
 
-
+SELECT sysdate from dual;
 
 SELECT * 
   FROM EMP
