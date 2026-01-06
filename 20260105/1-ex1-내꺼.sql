@@ -1,0 +1,433 @@
+
+SELECT EMPNO, DEPTNO, SAL
+FROM EMP
+WHERE DEPTNO = 20
+UNION
+SELECT EMPNO, DEPTNO, SAL
+FROM EMP
+WHERE DEPTNO = 10
+ORDER BY DEPTNO;
+
+-- UNION 중복제거
+SELECT DEPTNO, SAL
+FROM EMP
+WHERE DEPTNO = 20
+UNION
+SELECT DEPTNO, SAL
+FROM EMP
+WHERE DEPTNO = 10
+ORDER BY DEPTNO;
+
+-- UNION ALL 중복 포함
+SELECT DEPTNO, SAL
+FROM EMP
+WHERE DEPTNO = 20
+UNION ALL
+SELECT DEPTNO, SAL
+FROM EMP
+WHERE DEPTNO = 10
+ORDER BY DEPTNO;
+
+-- INTERSECT (교집합)
+SELECT EMPNO, ENAME, SAL, DEPTNO
+FROM EMP 
+INTERSECT
+SELECT EMPNO, ENAME, SAL, DEPTNO
+FROM EMP
+WHERE DEPTNO = 10; 
+
+-- MINUS (차집합)
+SELECT EMPNO, ENAME, SAL, DEPTNO
+FROM EMP 
+MINUS
+SELECT EMPNO, ENAME, SAL, DEPTNO
+FROM EMP
+WHERE DEPTNO = 10; 
+
+-- MINUS와 같은 결과값이 나온다.
+-- 부정어를 쓰면 보통은 속도가 느리다.
+-- 그래서. 부정어를 대신하여 쓸 목적으로 MINUS(차집합) 을 쓰기도 한다.
+-- 중복데이터 걷어낼때 사용함
+SELECT EMPNO, ENAME, SAL, DEPTNO
+FROM EMP  
+WHERE DEPTNO != 10; 
+
+
+-- 실습 EMP테이블에서 ENAME이 S로 끝나는 사람 조회
+-- 오라클 자체는 대소문자를 가리지 않지만 데이터는 대소문자를 가린다.
+SELECT ENAME
+FROM EMP  
+WHERE ENAME LIKE '%S'; 
+ 
+-- 실습 EMP테이블, 부서번호가 30인 사람 중 직책 SALESMAN 을 조회
+-- 숫자는 '' 삭제해도 되고, 캐릭터는 ''가 필요하다.
+SELECT *
+FROM EMP
+WHERE DEPTNO = 30
+AND JOB = 'SALESMAN'; 
+
+-- 실습 EMP테이블, 부서번호가 20, 30인 사람 중 급여가 2000초과 조회
+-- 집합연산자 사용하는 방법
+SELECT *
+FROM EMP
+WHERE DEPTNO = 20
+AND SAL > 2000
+UNION ALL
+SELECT *
+FROM EMP
+WHERE DEPTNO = 30
+AND SAL > 2000; 
+
+-- 집합연산자 사용 안하는 방법 
+SELECT *
+FROM EMP
+WHERE DEPTNO IN(20, 30)
+AND JOB = 'SALESMAN'; 
+
+-- 실습 EMP테이블, 급여가 2000이상, 3000이하 외의 데이터를 조회
+-- 집합연산자 사용하는 방법 // 차집합
+SELECT *
+FROM EMP 
+MINUS
+SELECT *
+FROM EMP
+WHERE SAL BETWEEN 2000 AND 3000;
+-- 집합연산자 사용 안하는 방법 
+SELECT *
+FROM EMP
+WHERE SAL < 2000
+OR SAL > 3000; 
+-- 집합연산자 사용 안하는 방법 
+SELECT *
+FROM EMP
+WHERE SAL NOT BETWEEN 2000 AND 3000;
+
+-- 실습 EMP테이블, E가 포함된 이름 중에
+-- 30번 부서에서 급여가 1000이상 2000 이하 외의 사람을 조회
+SELECT *
+FROM EMP
+WHERE ENAME LIKE '%E%'
+AND DEPTNO = 30
+AND SAL >= 1000
+OR SAL <= 2000;
+
+SELECT *
+FROM EMP
+WHERE DEPTNO = 30; 
+ 
+-- 방법1
+SELECT *
+FROM EMP
+WHERE ENAME LIKE '%E%'
+AND DEPTNO = 30
+AND SAL NOT BETWEEN 1000 AND 2000; 
+
+-- 방법2
+SELECT *
+FROM EMP
+WHERE ENAME LIKE '%E%'
+AND (SAL < 1000 OR SAL > 2000)
+AND DEPTNO = 30; 
+
+
+-- 실습 EMP테이블, 추가 수당 COMM 이 없고 직책이 MANAGER, CLERK 인 사람 중, 
+-- 두번째 글짜에 L이 아닌 사람
+SELECT *
+FROM EMP
+WHERE (COMM IS NULL OR COMM = 0)
+-- WHERE COMM = '0'
+AND JOB IN('MANAGER', 'CLERK')
+AND ENAME NOT LIKE '_L%';
+
+SELECT *
+FROM EMP
+WHERE COMM IS NULL
+AND JOB IN('MANAGER', 'CLERK')
+AND ENAME NOT LIKE '_L%';
+
+-- 수업
+-- 함수
+-- 단일행 / 다중행
+-- SELECT ENAME, 
+-- UPPER(ENAME) AS UPPER_NAME
+-- LOWER(ENAME) AS LOWER_NAME 
+-- INITCAP(ENAME) AS INITCAP_NAME 
+-- FROM EMP;
+
+
+SELECT ENAME, UPPER(ENAME) AS UPPER_NAME FROM EMP;
+
+SELECT ENAME, UPPER(ENAME), LOWER(ENAME), INITCAP(ENAME)
+FROM EMP;
+
+-- ENAME에 'SCOTT'이란 문자를 대소문자 변경하지 않고 조회하시오.
+SELECT ENAME, UPPER(ENAME), LOWER(ENAME), INITCAP(ENAME)
+FROM EMP
+WHERE ENAME = UPPER('SCOTT');
+
+
+-- 실습 EMP테이블 ENAME에 'SC'이란 문자가 포함된 데이터를 조회 하시오.
+-- (단, 문자를 변경하지 않고)
+SELECT ENAME
+FROM EMP
+WHERE ENAME = UPPER('SCOTT');
+
+
+SELECT ENAME
+FROM EMP
+WHERE ENAME like UPPER('%sc%');
+
+SELECT ENAME
+FROM EMP
+WHERE ENAME like ('%sc%');
+
+SELECT UPPER('%sc%')
+FROM dual; 
+
+select sysdate from dual;
+
+
+-- 실습 EMP테이블에서 이름은 소문자, 직책은 대문자로 조회하시ㅗㅇ.
+SELECT LOWER(ENAME), UPPER(JOB) 
+FROM EMP; 
+
+
+-- LENGTH : 많이 쓰임
+SELECT LENGTH('많이쓰임') + 10, LENGTH('12345')
+FROM dual;  
+
+
+SELECT LENGTH(ENAME)
+FROM EMP; 
+
+-- 실습 EMP테이블, 이름과 이름의 길이를 표시하되, 
+-- 단 이름의 길이가  5 이하 인 것만 표시
+SELECT ENAME, LENGTH(ENAME)
+FROM EMP
+WHERE LENGTH(ENAME) <= 5; 
+
+-- 에러 : 숫자와 문자 에러 예시 
+SELECT 1 + '4' FROM DUAL;
+-- '4'는 문자이지만 오라클에서 자동으로 숫자로 인지한다.
+SELECT 1 + 'A' FROM DUAL;
+
+-- 이어준다
+SELECT 1 || 'A' FROM DUAL; 
+
+
+-- | 길이 계산 | `LENGTH`, `LENGTHB` | 문자 수, 바이트 수 |
+SELECT LENGTH('한글'), LENGTHB('한글')
+FROM DUAL; 
+
+-- SUBSTR(문자열데이터, 시작위치, 추출길이)
+SELECT JOB, SUBSTR(JOB, 1, 2)
+FROM EMP ; 
+
+-- 3번째 2자리
+SELECT JOB, SUBSTR(JOB, 3, 2)
+FROM EMP ; 
+
+-- SQL 도구에 따라 끝자리가 공백으로 들어가기도 한다 그래서 -5 를 쓴다
+SELECT JOB, SUBSTR(JOB, 5, 10), LENGTH(SUBSTR(JOB, 5, 10)), LENGTH(SUBSTR(JOB, 5, LENGTH(JOB) - 6))
+FROM EMP ;
+
+-- 뒷 5자리
+SELECT JOB, SUBSTR(JOB, -5)
+FROM EMP ; 
+
+SELECT JOB, SUBSTR(JOB, -3, 2)
+FROM EMP ; 
+-- 추출길이는 - 없다
+SELECT JOB, SUBSTR(JOB, -3, -2)
+FROM EMP ; 
+
+SELECT JOB, SUBSTR(JOB, -LENGTH(JOB))
+FROM EMP ; 
+
+SELECT JOB, INSTR(JOB, 'K')
+FROM EMP;
+
+SELECT INSTR('HELLO, ORACLE!', 'L')
+FROM DUAL;
+
+SELECT INSTR('HELLO, ORACLE!', 'L', 5)
+FROM DUAL;
+
+SELECT INSTR('HELLO, ORACLE!', 'L', 2, 2)
+FROM DUAL;
+
+SELECT INSTR('HELLO, ORACLE!', 'L', 2, 2),
+SUBSTR('HELLO, ORACLE!', 1, INSTR('HELLO, ORACLE!', ',')-1) 
+FROM DUAL;
+
+-- 실습 EMP테이블, 사원명 중에 'S'가 포함된 사원들을 조회 하시오.
+SELECT ENAME
+FROM EMP
+WHERE ENAME LIKE '%s%'
+AND ENAME = UPPER(ENAME); 
+
+-- SELECT ENAME
+-- FROM EMP
+-- WHERE ENAME = UPPER(ENAME LIKE '%s%'); 
+
+SELECT ENAME
+FROM EMP
+WHERE ENAME LIKE UPPER('%s%') ;
+
+SELECT ENAME, INSTR(ENAME, 'S')
+FROM EMP
+WHERE INSTR(ENAME, 'S') > 0 ;
+
+SELECT ENAME
+FROM EMP
+WHERE INSTR(ENAME, UPPER('%s%')) > 0 ;
+
+-- 제미나이 방법1 : 실무에서 LIKE 더 쓰임
+SELECT ENAME
+FROM EMP
+WHERE UPPER(ENAME) LIKE '%S%';
+-- 제미나이 방법2
+SELECT ENAME
+FROM EMP
+WHERE INSTR(UPPER(ENAME), 'S') > 0;
+
+-- 로그인 아이디 많이 사용
+SELECT ENAME
+FROM EMP
+WHERE UPPER(ENAME) = ENAME;
+
+-- REPLACE : 특정문자를 다른 문자로 대체한다
+SELECT ENAME, REPLACE(ENAME, 'S', '!')
+FROM EMP;
+
+SELECT ENAME, REPLACE(ENAME, 'S')
+FROM EMP; 
+
+-- 실습 EMP테이블, 010-1234-5678 에서 '-' 없이 연결하기
+SELECT REPLACE('010-1234-5678', '-', '')
+FROM DUAL;
+
+-- 실습 EMP테이블, 010-1234-5678 에서 '-' 없이 연결하기
+-- 01012345678 -> 각각 '1234' , '5678'
+-- 010-1234-5678 -> 각각 '1234' , '5678'
+SELECT REPLACE('010-1234-5678', '-', '') AS 교체
+     , REPLACE('010-1234-5678', '-') AS 교체
+     , SUBSTR(REPLACE('010-1234-5678', '-', ''), 4, 4) AS 앞4개
+     , SUBSTR(REPLACE('010-1234-5678', '-', ''), 8, 4) AS 뒤4개
+     , SUBSTR('010-1234-5678', -9, 4) AS 앞4개
+     , SUBSTR('010-1234-5678', -4, 4) AS 뒤4개
+     , SUBSTR('010-1234-5678', INSTR('010-1234-5678', '-'), 4) AS 앞4개 
+     , SUBSTR('010-1234-5678', INSTR('010-1234-5678', '-'), 4) AS 앞4개 
+     , REPLACE('010-1234-5678', '-', '')
+  FROM DUAL;
+
+-- LPAD
+-- RPAD
+-- CONCAT
+-- TRIM
+-- LTIRM
+-- RTRIM
+
+SELECT '010-1234-5678' AS 연락처
+     , '260105-123456' AS 주민번호
+    --  , '010-1234-' AS 연락처
+    --  , '260105-1' AS 주민번호
+     , RPAD('010-1234-5678',10,'#') AS 기냥
+    --  , LPAD('010-1234-5678',5, '0') 
+    --  , RPAD('010-1234-5678',9,'*')
+    --  , LPAD('010-1234-****','-')  
+     , RPAD(
+            SUBSTR('010-1234-5678',1, INSTR('010-1234-5678','-',1,2)),
+            LENGTH('010-1234-5678'),
+            '#'
+            ) AS 샵처리
+    --  , INSTR('010-1234--****',', '-'), 4)
+FROM DUAL;
+
+SELECT '010-1234-****' AS 연락처
+     , '260105-1*****' AS 주민번호
+    --  , '010-1234-' AS 연락처
+    --  , '260105-1' AS 주민번호
+    --  , RPAD('010-1234-5678',10,'#')
+    --  , LPAD('010-1234-5678',5, '0') 
+     , REPLACE('010-1234-5678', '5', '*')
+FROM DUAL;
+
+
+-- RPAD(
+--     SBUSTR(PHONE,1, INSTR(PHONE, '-' 1,2)),
+--     LEHTH(), '#' 
+-- );
+
+SELECT CONCAT('PHONE','JUMIN')
+FROM DUAL;
+
+-- 사번:1111 성명:SCOTT
+-- EMPNO SCOTT 
+-- CONCAT('사번:' '성명:')
+
+SELECT CONCAT('ENAME','EMPNO')
+    , LPAD(
+        CONCAT('ENAME','EMPNO')
+        , SUBSTR(CONCAT('ENAME','EMPNO'), 1, 4)
+        ,'사번 : ' 
+      )
+FROM DUAL;
+
+SELECT CONCAT(ENAME, EMPNO) 
+    , CONCAT('사번:', EMPNO) 
+    , CONCAT('성명:', ENAME) 
+    , CONCAT(CONCAT('사번:', EMPNO) , CONCAT('성명:', ENAME)) 
+FROM EMP;
+
+-- 오라클에서는 CONCAT 대신 || 사용하면 됨
+SELECT CONCAT(ENAME, EMPNO) 
+    , CONCAT('사번:', EMPNO) 
+    , CONCAT('성명:', ENAME) 
+    , '사번:' || EMPNO || '성명:'|| ENAME 
+FROM EMP;
+
+-- TRIM
+SELECT '[' || ' _ORACLE_ ' || ']'
+, '[' || TRIM(' _ORACLE_ ') || ']'
+FROM dual ;
+
+ 
+-- ROUND    반올림
+-- TRUNC    버림
+-- CEIL     
+-- FLOOR    
+-- MOD      나머지 : 나머지로 홀수짝수 구분하기 위해 사용한다
+
+
+SELECT 
+      SAL/3
+    , ROUND(SAL/3)
+    , ROUND(SAL/3,2)
+    , TRUNC(SAL/3) 
+    , TRUNC(SAL/3,2) 
+    , MOD(EMPNO,2) /* 주석 */
+FROM EMP;
+
+SELECT 
+      SAL/3 
+    , MOD(EMPNO,2) 
+FROM EMP
+WHERE MOD(EMPNO,2) = 0;
+
+
+SELECT RPAD('123456123456', 10, '#' )
+FROM EMP;
+
+
+
+
+
+
+
+
+
+
+
+
+
