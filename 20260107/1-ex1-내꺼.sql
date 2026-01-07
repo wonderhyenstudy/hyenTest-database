@@ -1,0 +1,430 @@
+
+
+
+-- 8장 JOIN
+-- INNER OUTER
+-- UNION 세로추가. JOIN 가로추가
+-- 정규화 : ??? 
+-- PK : 유니크(유일), NOT NULL 안됨, 자동인덱스 생성
+-- FK(외래키) : 연결키. 실제로는 잘 안 씀. NOT NULL 허용. 
+
+-- 등가조인 INNER
+-- 외부조인 OUTER
+-- 등가 조인 : '=' 사용
+-- 비등가 조인 : 등가 조인 외
+-- 자체 조인 : 하나의 테이블을 여러 테이블처럼 사용
+-- 외부 조인 : 조인 조건의 NULL 데이터도 출력
+-- 왼쪽 외부 조인(Left Outer Join)	    WHERE TABLE1.COL1 = TABLE2.COL1(+)
+-- 오른쪽 외부 조인(Right Outer Join)	WHERE TABLE1.COL1(+) = TABLE2.COL1
+
+
+-- 소속을 정확히 하라.
+SELECT 
+      E.EMPNO
+    , E.ENAME
+    , E.DEPTNO
+    , D.DNAME
+    , D.LOC
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO;
+-- 표준어
+SELECT 
+      E.EMPNO
+    , E.ENAME
+    , E.DEPTNO
+    , D.DNAME
+    , D.LOC
+FROM EMP E 
+    JOIN DEPT D ON(E.DEPTNO = D.DEPTNO);
+
+SELECT 
+      *
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO;
+-- 표준어
+SELECT 
+      *
+FROM EMP E 
+    JOIN DEPT D ON(E.DEPTNO = D.DEPTNO);
+
+SELECT 
+      E.ENAME
+    , D.*
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO
+AND D.LOC = 'CHICAGO'; 
+-- 표준어
+SELECT 
+      E.ENAME
+    , D.*
+FROM EMP E 
+    JOIN DEPT D ON(E.DEPTNO = D.DEPTNO)
+WHERE D.LOC = 'CHICAGO'; 
+
+SELECT 
+      E.ENAME
+    , D.*
+FROM EMP E 
+    JOIN DEPT D ON(D.LOC = 'CHICAGO')
+WHERE E.DEPTNO = D.DEPTNO; 
+
+
+-- 등가 조인
+SELECT 
+      E.EMPNO
+    , E.ENAME
+    , E.SAL
+    , D.DEPTNO
+    , D.DNAME
+    , D.LOC
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO
+AND E.SAL <= 2500
+AND E.EMPNO <= 9999
+ORDER BY E.EMPNO; 
+-- 표준어로 바꿔보기
+SELECT 
+      E.EMPNO
+    , E.ENAME
+    , E.SAL
+    , D.DEPTNO
+    , D.DNAME
+    , D.LOC
+FROM EMP E 
+    JOIN DEPT D ON (E.DEPTNO = D.DEPTNO)
+WHERE E.SAL <= 2500
+    AND E.EMPNO <= 9999
+ORDER BY E.EMPNO;
+
+
+
+
+-- 비등가조인 : 현업에서 사용안함
+SELECT *
+FROM EMP E, SALGRADE S
+WHERE E.SAL BETWEEN S.LOSAL AND S.HISAL;
+--  표준어로
+SELECT *
+FROM EMP E 
+    JOIN SALGRADE S ON (E.SAL BETWEEN S.LOSAL AND S.HISAL);
+
+ 
+
+-- 잘못된 경우
+SELECT *
+FROM EMP E, SALGRADE S
+ORDER BY E.EMPNO;
+
+-- 잘못된 경우
+SELECT *
+FROM EMP E, SALGRADE S
+WHERE E.SAL <= S.HISAL
+ORDER BY E.EMPNO; 
+
+
+-- 셀프조인
+SELECT
+      E1.EMPNO
+    , E1.ENAME AS ENAME_ENAME
+    , E1.MGR
+    , E2.ENAME AS MGR_ENAME
+FROM EMP E1, EMP E2
+WHERE E1.MGR = E2.EMPNO;  
+-- 표준어로 바꾸자
+SELECT
+      E1.EMPNO
+    , E1.ENAME AS ENAME_ENAME
+    , E1.MGR
+    , E2.ENAME AS MGR_ENAME
+FROM EMP E1 
+    JOIN EMP E2 ON (E1.MGR = E2.EMPNO); 
+
+
+-- 지금까지는 INNER JOIN 
+
+-- 이제부터는 OUTER JOIN
+
+-- LEFT OUTER JOIN
+-- 기준이 되는 놈이 다 나와야 한다. 그래서 + 를 해준다
+SELECT
+      E1.EMPNO
+    , E1.ENAME AS ENAME_ENAME
+    , E1.MGR
+    , E2.ENAME AS MGR_ENAME
+FROM EMP E1, EMP E2
+WHERE E1.MGR = E2.EMPNO(+);  
+-- 표준어로 바꾸자
+SELECT
+      E1.EMPNO
+    , E1.ENAME AS ENAME_ENAME
+    , E1.MGR
+    , E2.ENAME AS MGR_ENAME
+FROM EMP E1 
+    LEFT OUTER JOIN EMP E2 ON (E1.MGR = E2.EMPNO);
+
+
+-- RIGHT OUTER JOIN
+SELECT
+      E1.EMPNO
+    , E1.ENAME AS ENAME_ENAME
+    , E1.MGR
+    , E2.ENAME AS MGR_ENAME
+FROM EMP E1, EMP E2
+WHERE E1.MGR(+) = E2.EMPNO; 
+-- 표준어로 바꾸자
+SELECT
+      E1.EMPNO
+    , E1.ENAME AS ENAME_ENAME
+    , E1.MGR
+    , E2.ENAME AS MGR_ENAME
+FROM EMP E1 
+    RIGHT OUTER JOIN EMP E2 ON(E1.MGR = E2.EMPNO); 
+
+SELECT
+      E.EMPNO
+    , E.ENAME
+    , E.DEPTNO
+    , D.DEPTNO AS DNO
+    , D.DNAME
+FROM EMP E , DEPT D
+WHERE E.DEPTNO = D.DEPTNO; 
+
+
+SELECT
+      E.EMPNO
+    , E.ENAME
+    , E.DEPTNO
+    , D.DEPTNO AS DNO
+    , D.DNAME
+FROM EMP E , DEPT D
+WHERE E.DEPTNO(+) = D.DEPTNO; 
+-- 표준어로 바꾸자
+SELECT
+      E.EMPNO
+    , E.ENAME
+    , E.DEPTNO
+    , D.DEPTNO AS DNO
+    , D.DNAME
+FROM EMP E 
+RIGHT OUTER JOIN DEPT D ON (E.DEPTNO = D.DEPTNO); 
+
+-- LEFT 가 많이 쓰임
+-- (+) 는 반대로. 있는쪽이 없는쪽에 갖다 붙인다.ALTER
+-- (+) 기호가 붙은 테이블의 정보가 없더라도 반대쪽 테이블의 정보는 모두 표시
+-- 없는건 NULL 처리해서 나옴
+
+-- 표준어로 바꿔줘 보자!! 
+
+-- FROM TABLE1 JOIN TABLE2 ON (조인 조건식)
+ SELECT 
+      E.EMPNO
+    , E.ENAME
+    , E.SAL
+    , D.DEPTNO
+    , D.DNAME
+    , D.LOC
+FROM EMP E 
+    JOIN DEPT D ON (E.DEPTNO = D.DEPTNO)
+WHERE E.SAL <= 2500
+    AND E.EMPNO <= 9999
+ORDER BY E.EMPNO;
+
+
+-- FROM EMP E 
+--     JOIN DEPT D ON (E.DEPTNO = D.DEPTNO) 
+--     JOIN SALGRADE
+
+
+-- SELECT 
+--       E.DEPTNO
+--     , D.DEPTNO 
+-- FROM EMP E 
+--     JOIN DEPT D ON E.DEPTNO = D.DEPTNO 
+--     JOIN SALGRADE S ON E.HISAL = S.HISAL 
+
+-- SQL-99 이전 : (+)
+SELECT 
+      E.EMPNO
+    , E.ENAME 
+    , E.JOB 
+    , E.MGR 
+    , E.HIREDATE 
+    , E.SAL 
+    , E.COMM 
+    , D.DEPTNO 
+    , D.DNAME 
+    , D.LOC 
+FROM EMP E, DEPT D
+WHERE E.DEPTNO = D.DEPTNO(+)
+    AND E.SAL >= 3000
+    AND E.MGR IS NOT NULL
+ORDER BY DEPTNO, E.EMPNO; 
+
+-- SQL-99 이후 : 표준
+SELECT 
+      E.EMPNO
+    , E.ENAME 
+    , E.JOB 
+    , E.MGR 
+    , E.HIREDATE 
+    , E.SAL 
+    , E.COMM 
+    , D.DEPTNO 
+    , D.DNAME 
+    , D.LOC 
+FROM EMP E JOIN DEPT D ON (E.DEPTNO = D.DEPTNO)
+WHERE E.SAL >= 3000
+    AND E.MGR IS NOT NULL
+ORDER BY DEPTNO, E.EMPNO;    
+
+
+
+-- Q1
+-- 급여가 2000을 초과한 사원의 부서정보, 사원정보 출력
+-- 단, SQL-99 이전 방식(약식인 + )과 SQL-99(ANSI 표준) 방식을 각각 사용하여 작성
+-- 1)
+SELECT 
+      D.DEPTNO
+    , D.DNAME
+    , E.EMPNO
+    , E.ENAME 
+    , E.SAL
+FROM EMP E, DEPT D
+WHERE E.DEPTNO(+) = D.DEPTNO
+AND E.SAL > 2000; 
+
+-- 2)
+SELECT 
+      D.DEPTNO
+    , D.DNAME
+    , E.EMPNO
+    , E.ENAME 
+    , E.SAL
+FROM EMP E 
+    RIGHT OUTER JOIN DEPT D ON E.DEPTNO = D.DEPTNO 
+WHERE E.SAL > 2000;
+
+
+-- Q2
+
+SELECT
+      D.DEPTNO
+    , D.DNAME
+    , ROUND(AVG(E.SAL),0) AS AVG_SAL
+    , MAX(E.SAL) AS MAX_SAL
+    , MIN(E.SAL) AS MIN_SAL
+    , COUNT(E.EMPNO) AS CNT
+FROM EMP E, DEPT D
+WHERE E.DEPTNO(+) = D.DEPTNO
+GROUP BY D.DEPTNO, D.DNAME
+ORDER BY D.DEPTNO;
+
+SELECT
+      D.DEPTNO
+    , D.DNAME
+    , ROUND(AVG(E.SAL),0) AS AVG_SAL
+    , MAX(E.SAL) AS MAX_SAL
+    , MIN(E.SAL) AS MIN_SAL
+    , COUNT(E.EMPNO) AS CNT
+FROM EMP E 
+    RIGHT OUTER JOIN DEPT D ON (E.DEPTNO = D.DEPTNO)
+GROUP BY D.DEPTNO, D.DNAME
+ORDER BY D.DEPTNO;
+
+-- Q3
+
+SELECT 
+    D.DEPTNO
+    , D.DNAME
+    , E.EMPNO
+    , E.ENAME
+    , E.JOB
+    , E.SAL
+FROM EMP E, DEPT D
+WHERE E.DEPTNO(+) = D.DEPTNO
+ORDER BY E.DEPTNO, E.ENAME;
+
+SELECT 
+    D.DEPTNO
+    , D.DNAME
+    , E.EMPNO
+    , E.ENAME
+    , E.JOB
+    , E.SAL
+FROM EMP E 
+    RIGHT OUTER JOIN DEPT D ON E.DEPTNO(+) = D.DEPTNO
+ORDER BY E.DEPTNO, E.ENAME;
+
+-- Q4
+ SELECT *
+FROM EMP E, SALGRADE S
+WHERE E.SAL BETWEEN S.LOSAL AND S.HISAL; 
+ 
+SELECT 
+      D.DEPTNO
+    , D.DNAME 
+    , E.EMPNO 
+    , E.ENAME
+    , E.MGR
+    , E.SAL 
+    , E.DEPTNO 
+    , S.LOSAL
+    , S.HISAL
+    , S.GRADE
+    , E.MGR AS MGR_EMPNO
+    , E2.ENAME AS MGR_ENAME
+FROM DEPT D, EMP E, SALGRADE S, EMP E2
+WHERE D.DEPTNO = E.DEPTNO(+)
+    AND E.SAL BETWEEN S.LOSAL(+) AND S.HISAL(+)
+    AND E.MGR = E2.EMPNO(+)
+ORDER BY E.DEPTNO, E.EMPNO;  
+  
+
+SELECT 
+      D.DEPTNO
+    , D.DNAME 
+    , E.ENAME
+    , E.EMPNO
+    , E.MGR
+    , E.SAL 
+    , E.DEPTNO 
+    , S.LOSAL
+    , S.HISAL
+    , S.GRADE
+    , E.MGR AS MGR_EMPNO
+    , E2.ENAME AS MGR_ENAME
+FROM DEPT D
+    LEFT OUTER JOIN EMP E ON D.DEPTNO = E.DEPTNO
+    LEFT OUTER JOIN SALGRADE S ON E.SAL BETWEEN S.LOSAL AND S.HISAL 
+    LEFT OUTER JOIN EMP E2 ON E.MGR = E2.EMPNO
+ORDER BY E.DEPTNO, E.EMPNO;
+ 
+SELECT 
+      D.DEPTNO
+    , D.DNAME 
+    , E.ENAME
+    , E.EMPNO
+    , E.MGR
+    , E.SAL 
+    , E.DEPTNO 
+    , S.LOSAL
+    , S.HISAL
+    , S.GRADE
+    , E.MGR AS MGR_EMPNO
+    -- , E2.ENAME AS MGR_ENAME
+FROM DEPT D
+    LEFT OUTER JOIN EMP E ON D.DEPTNO = E.DEPTNO
+    LEFT OUTER JOIN SALGRADE S ON E.SAL BETWEEN S.LOSAL AND S.HISAL 
+    -- LEFT OUTER JOIN EMP E2 ON E.MGR = E2.EMPNO
+ORDER BY E.DEPTNO, E.EMPNO;
+
+
+
+
+
+
+
+
+
+
+
