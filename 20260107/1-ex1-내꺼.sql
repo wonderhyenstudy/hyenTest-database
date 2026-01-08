@@ -12,7 +12,7 @@
 -- 외부조인 OUTER
 -- 등가 조인 : '=' 사용
 -- 비등가 조인 : 등가 조인 외
--- 자체 조인 : 하나의 테이블을 여러 테이블처럼 사용
+-- 자체(셀프) 조인 : 하나의 테이블을 여러 테이블처럼 사용
 -- 외부 조인 : 조인 조건의 NULL 데이터도 출력
 -- 왼쪽 외부 조인(Left Outer Join)	    WHERE TABLE1.COL1 = TABLE2.COL1(+)
 -- 오른쪽 외부 조인(Right Outer Join)	WHERE TABLE1.COL1(+) = TABLE2.COL1

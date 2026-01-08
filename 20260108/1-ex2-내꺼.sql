@@ -1,0 +1,28 @@
+
+
+
+select * from dept_temp;
+
+delete from dept_temp
+where deptno = 70;
+
+commit;
+
+
+SELECT * FROM DEPT_TEMP;
+
+UPDATE DEPT_TEMP
+SET LOC ='BUSAN'
+WHERE DEPTNO = '30';
+
+
+-- LOCK 거렸을때 해결방법
+
+SELECT * FROM DEPT_TEMP;
+
+
+UPDATE DEPT_TEMP
+SET LOC ='BUSAN21323'
+WHERE DEPTNO = '30';
+
+UPDATE DEPT_TEMP SET LOC ='BUSANAAAAAA' WHERE DEPTNO = '30';
