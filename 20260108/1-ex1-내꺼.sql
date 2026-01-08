@@ -293,6 +293,7 @@ DELETE FROM CHAP10HW_EMP
                         AND S.GRADE = 5
                     )
 ;
+COMMIT;
 
 
 
