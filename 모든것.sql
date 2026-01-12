@@ -17,6 +17,8 @@ CREATE TABLE EMP_TEST(
     COMM    NUMBER(7,2),
     DEPTNO  NUMBER(2) CONSTRAINT EMPFK_EMPNO_FK REFERENCES TABLE_FK (DEPTNO)
 );  
+
+--  CONSTRAINT EMPCK_POSITION_CK CHECK ''
 -- 열 추가
 ALTER TABLE EMP_ALTER
     ADD HP VARCHAR2(20); 
@@ -101,12 +103,13 @@ SELECT *
 SELECT *
   FROM EMP
  WHERE SAL >= 1500 
-       AND COMM IS NOT NULL -- 값이 없다.
+       AND COMM IS NOT NULL -- 값이 null이 아니다. 값이 있다.
        AND COMM != 0;       -- 값이 0 이다.
 
 -- 4.연산자////////////////////////////////////////////////////////
 -- 기호(+, -, *, /) 또는 특정 키워드(AND, OR, LIKE), IS NULL, IS NOT NULL
--- BETWEEN A AND B
+-- > : 초과 , <: 미만 , >= : 이상, <= : 이하
+-- BETWEEN A AND B : 이상, 이하
 -- LIKE 연산자 ENAME LIKE 'A%' : A로 시작
 -- 집합 연산자 `UNION`, `UNION ALL`, `MINUS`, `INTERSECT`
 
@@ -170,8 +173,8 @@ SELECT *
 
 -- - **날짜 비교**: 
 SELECT SYSDATE - HIREDATE FROM EMP;
--- - **NULL 처리**: 
-SELECT ENAME, NVL(COMM, 0) FROM EMP;
+-- - **NULL 처리**: / null일때
+SELECT ENAME,comm, NVL(COMM, 0) FROM EMP;
 -- - **조건 분기**: 
 SELECT ENAME, CASE WHEN JOB = 'MANAGER' THEN 'Y' ELSE 'N' END AS IS_MANAGER FROM EMP;
 
@@ -282,8 +285,9 @@ ORDER BY LENGTH(SAL) DESC;
 
 -- NVL(내용, NULL일때반환값)  : NULL이 아니면 그대로 / NULL이면 0
 -- NVL2(내용, NULL아닐때값, NULL일때값) : NULL이 아니면 0 / NULL이면 X
-SELECT 
-      NVL(COMM,0)  
+SELECT
+      COMM
+    , NVL(COMM,0)  
     , NVL(COMM,0) + 1
     , NVL2(COMM,COMM,10)
     , NVL2(COMM,'0','x') AS NVL2

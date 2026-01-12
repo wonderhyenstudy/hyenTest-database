@@ -305,7 +305,7 @@ FROM EMP E
 WHERE E.SAL > 2000;
 
 
--- Q2
+-- Q2 부서별 뽑기
 
 SELECT
       D.DEPTNO

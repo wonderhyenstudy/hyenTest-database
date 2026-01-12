@@ -1,5 +1,12 @@
-use blog
-switched to db blog
+
+-- MONGODB 사용법
+-- 1. open mongoDB sell 열기
+-- 2. 사용할 컬렉션 지정 : use blog
+--     답 : switched to db blog
+-- 3. 생성, 추가, 삭제 등 명령어를 넣어주면 됩니다.
+-- 4. 각 컬렉션에 들어가서 refresh 버튼을 눌러 새로고침한다.
+
+
 db.createCollection("posts")
     { ok: 1 }
 db.posts.insertOne({title:"First1"})

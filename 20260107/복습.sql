@@ -21,6 +21,8 @@
 -- from : 하나의 테이블처럼 쓴다
 -- whrer : 조건으로 비교 검색할때
 
+
+-- ALLEN 이란 사람의 직업과 같은 사람
 SELECT * 
 FROM EMP E, DEPT D
 WHERE E.DEPTNO = D.DEPTNO
@@ -31,6 +33,7 @@ AND JOB = (
           )
 ;
 
+-- 평균급여보다 많이 받는 사람
 SELECT *
 FROM EMP E, DEPT D, SALGRADE S
 WHERE E.DEPTNO = D.DEPTNO(+)
@@ -39,6 +42,7 @@ WHERE E.DEPTNO = D.DEPTNO(+)
               FROM EMP)
 ;            
 
+-- 부서10이고 부서30의 JOB인 사람
 SELECT *
 FROM EMP E, DEPT D
 WHERE E.DEPTNO = D.DEPTNO(+)
@@ -49,7 +53,7 @@ AND E.JOB NOT IN (
           WHERE DEPTNO = 30 
 );
 
-
+-- SALESMAN 그룹의 최고급여 보다 많이 받는 사람
 SELECT *
 FROM EMP E, SALGRADE S
 WHERE E.SAL BETWEEN S.LOSAL(+) AND S.HISAL(+)
